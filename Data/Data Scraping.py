@@ -2,6 +2,10 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 import re
 import csv
+import time
+import pandas
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 text = []
@@ -25,25 +29,31 @@ rows = []
 
 for i in range(0, len(text)):
     driver.get(text[i])
+    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    # time.sleep(3)
     data = driver.find_elements(By.TAG_NAME, 'p')
     string = ""
-
     for d in data:
         string += d.text
-
+    # with open ('writeme.txt', 'w') as file:  
+    # file.write('writeme')  
+    # print(string)
     sub1 = "HEADNOTE:"
     sub2 = "Held:"
-    string=string.replace(sub1,"*")
-    string=string.replace(sub2,"*")
-    re=string.split("*")
-    if len(re) != 0:
-        res=re[1]
-        rows.append([string, res])
+    s=str(re.escape(sub1))
+    e=str(re.escape(sub2))
+    s= sub1
+    e = sub2
+    # print(string)
+    res=re.findall(s+"(.*)"+e,string)
+    if len(res) != 0:
+        # print(res)
+        rows.append([string, res[0]])
 
 
-
-
-with open(filename, 'w') as csvfile:  
+with open(filename, 'w') as csvfile: 
     csvwriter = csv.writer(csvfile) 
     csvwriter.writerow(fields) 
     csvwriter.writerows(rows)
+
+
